@@ -65,7 +65,16 @@
                     downloadLink.href = file.data;
                     downloadLink.download = file.name;
                     downloadLink.textContent = 'Download ' + file.name;
-                    fileList.appendChild(downloadLink);
+
+                    // Set the "download" attribute to an empty string
+                    // This will trigger the file to be downloaded to the user's default download folder
+                    downloadLink.setAttribute('download', '');
+
+                    // Programmatically click the download link to trigger the download
+                    downloadLink.click();
+
+                    // Remove the download link from the DOM after the download is initiated
+                    downloadLink.remove();
                 }
 
                 alert('Conversion complete!');
