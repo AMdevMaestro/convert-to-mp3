@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Audio to MP3 Converter</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Audio to MP3 Converter</h1>
+
+    <input type="file" id="fileInput" multiple accept=".wav,.aif,.aiff,.flac,.m4a">
+    <button onclick="convertFiles()">Convert</button>
+
+    <ul id="fileList"></ul>
+
+    <script>
+        function convertFiles() {
+            var fileList = document.getElementById('fileList');
+            if (fileList.children.length === 0) {
+                alert('No files selected!');
+                return;
+            }
+
+            var bitrateDropdown = document.getElementById('bitrateDropdown');
+            var selectedBitrate = bitrateDropdown.value;
+
+            var files = [];
+            for (var i = 0; i < fileList.children.length; i++) {
+                var listItem = fileList.children[i];
+                files.push(listItem.textContent);
+            }
+
+            var bitrateMapping = {
+                'LOFI - 96k': '96k',
+                'STANDARD - 192k': '192k',
+                'HQ - 320k': '320k'
+            };
+            var bitrate = bitrateMapping[selectedBitrate];
+
+            // Perform conversion logic here using FileReader API
+            // This example demonstrates converting to base64 representation
+            var convertedFiles = [];
+            var totalFiles = files.length;
+            var convertedCount = 0;
+
+            function convertFile(file) {
+                var reader = new FileReader();
+                reader.onload = function (event) {
+                    convertedFiles.push({
+                        name: file.name,
+                        data: event.target.result
+                    });
+
+                    convertedCount++;
+                    if (convertedCount === totalFiles) {
+                        downloadConvertedFiles(convertedFiles);
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function downloadConvertedFiles(convertedFiles) {
+                for (var i = 0; i < convertedFiles.length; i++) {
+                    var file = convertedFiles[i];
+                    var downloadLink = document.createElement('a');
+                    downloadLink.href = file.data;
+                    downloadLink.download = file.name;
+                    downloadLink.textContent = 'Download ' + file.name;
+                    fileList.appendChild(downloadLink);
+                }
+
+                alert('Conversion complete!');
+            }
+
+            // Convert each selected file
+            for (var i = 0; i < fileList.children.length; i++) {
+                var listItem = fileList.children[i];
+                var file = listItem.textContent;
+                convertFile(file);
+            }
+        }
+
+        document.getElementById('fileInput').addEventListener('change', function (event) {
+            var fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+
+            var files = event.target.files;
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var listItem = document.createElement('li');
+                listItem.textContent = file.name;
+                fileList.appendChild(listItem);
+            }
+        });
+    </script>
+</body>
+</html>
